@@ -1,10 +1,10 @@
 FROM frolvlad/alpine-glibc:alpine-3.3_glibc-2.23
 
-MAINTAINER zopanix <zopanix@gmail.com>
+MAINTAINER calbex
 
 WORKDIR /opt
 
-COPY ./new_smart_launch.sh /opt/
+COPY ./simple_launch.sh /opt/
 COPY ./factorio.crt /opt/
 
 VOLUME /opt/factorio/saves /opt/factorio/mods
@@ -12,14 +12,14 @@ VOLUME /opt/factorio/saves /opt/factorio/mods
 EXPOSE 34197/udp
 EXPOSE 27015/tcp
 
-CMD ["./new_smart_launch.sh"]
+CMD ["./simple_launch.sh"]
 
 ENV FACTORIO_AUTOSAVE_INTERVAL=2 \
     FACTORIO_AUTOSAVE_SLOTS=3 \
     FACTORIO_ALLOW_COMMANDS=false \
     FACTORIO_NO_AUTO_PAUSE=false \
-    VERSION=0.14.8 \
-    FACTORIO_SHA1=db71bd07aeb8b3775c9254597eaf5af858c84b7d \
+    VERSION=0.14.22 \
+    FACTORIO_SHA1=c43fa0d750e8347ec466ce165053db3cd3dc2fe0 \
     FACTORIO_WAITING=false \
     FACTORIO_MODE=normal \
     FACTORIO_SERVER_NAME= \
@@ -38,4 +38,3 @@ RUN apk --update add bash curl && \
     tar xzf /tmp/factorio_headless_x64_$VERSION.tar.gz && \
     rm /tmp/factorio_headless_x64_$VERSION.tar.gz && \
     apk del curl
-

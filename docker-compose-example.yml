@@ -1,0 +1,8 @@
+factorio:
+    build: .
+    ports:
+        - "34197:34197/udp"
+    volumes:
+        - ./saves:/opt/factorio/saves
+        - ./mods:/opt/factorio/mods
+        - ./server-settings.json:/opt/factorio/data/server-settings.json:ro
