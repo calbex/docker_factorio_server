@@ -4,6 +4,7 @@ import time
 import random
 import string
 import sys
+from getpass import getpass
 
 
 def get_random_string(length=5):
@@ -106,7 +107,7 @@ class MachineSetup(object):
             droplet.destroy()
 
 if __name__ == "__main__":
-    secret_token = "digitaloceanapitoken"
+    secret_token = getpass(prompt="DigitalOcean API Token: ")
     domain = "example.com"
     interface = MachineSetup(secret_token, domain)
 
