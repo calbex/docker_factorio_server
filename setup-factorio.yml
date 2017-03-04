@@ -3,10 +3,10 @@
   remote_user: root
   tasks:
     - name: Pull the Git Repo
-     git:
-       repo: https://github.com/calbex/docker_factorio_server.git
-       dest: /root/factorio
-       version: master
+      git:
+        repo: https://github.com/calbex/docker_factorio_server.git
+        dest: /root/factorio
+        version: master
 
     - name: Check if save files exist
       local_action: stat path=./saves.tar.gz
