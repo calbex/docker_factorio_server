@@ -3,19 +3,31 @@
   remote_user: root
   tasks:
     - name: Pull the Git Repo
-      git:
-        repo: https://github.com/calbex/docker_factorio_server.git
-        dest: /root/factorio
-        version: master
+     git:
+       repo: https://github.com/calbex/docker_factorio_server.git
+       dest: /root/factorio
+       version: master
+
+    - name: Check if save files exist
+      local_action: stat path=./saves.tar.gz
+      register: saves
+      ignore_errors: True
+
+    - name: Copy saves to server if found
+      copy: src=./saves.tar.gz dest=/root/factorio
+      when: saves.stat.exists
+
     - name: Call setup script
       command: /root/factorio/setup.sh
       args:
         chdir: /root/factorio/
         creates: /root/factorio/docker-compose.yml
+    
     - name: Build Docker image
       command: docker-compose build
       args:
         chdir: /root/factorio/
+    
     - name: Start Docker image
       command: docker-compose up -d 
       args:
