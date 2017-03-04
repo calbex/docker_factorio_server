@@ -1,0 +1,23 @@
+---
+- hosts: all
+  remote_user: root
+  tasks:
+    - name: Pull the Git Repo
+      git:
+        repo: https://github.com/calbex/docker_factorio_server.git
+        dest: /root/factorio
+        version: master
+    - name: Call setup script
+      command: /root/factorio/setup.sh
+      args:
+        chdir: /root/factorio/
+        creates: /root/factorio/docker-compose.yml
+    - name: Build Docker image
+      command: docker-compose build
+      args:
+        chdir: /root/factorio/
+    - name: Start Docker image
+      command: docker-compose up -d 
+      args:
+        chdir: /root/factorio/
+

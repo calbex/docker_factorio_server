@@ -16,6 +16,7 @@ docker-compose up -d
 Create a new Factorio server on DigitalOcean:
 ```
 python digitalocean-setup.py create --domain example.com
+ansible-playbook -i factorio-*****.net.example.com, setup-factorio.yml
 ```
 
 This will create a new server at factorio-*****.net.example.com.

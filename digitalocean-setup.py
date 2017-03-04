@@ -125,6 +125,8 @@ class DigitalOceanSetup(object):
         Register the CMD args for the create function
         """
         parser.add_argument("--domain", required=False)
+        parser.add_argument("--ansible", required=False,
+                            dest="ansible", action="store_true")
         return parser
 
     @staticmethod
@@ -143,8 +145,13 @@ class DigitalOceanSetup(object):
         droplet = interface.create_new_server(machine_name, "factorio")
         interface.setup_domain_for_droplet(droplet, machine_name)
         # Output the IP address and hostname for the new droplet
-        print(droplet.ip_address)
-        print(interface.create_domain_name(machine_name))
+        eprint(droplet.ip_address)
+        final_domain = interface.create_domain_name(machine_name)
+        print(final_domain)
+        # Run ansible playbook
+        if args.ansible:
+            eprint("Complete the setup by running the following:")
+            eprint("ansible-playbook -i {0}, setup-factorio.yml".format(final_domain))
 
     @staticmethod
     def setup_args_delete(parser):
