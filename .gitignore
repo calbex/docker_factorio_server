@@ -2,3 +2,4 @@ docker-compose.yml
 server-settings.json
 saves/
 mods/
+*.tar.gz
