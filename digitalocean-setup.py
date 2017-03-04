@@ -3,6 +3,8 @@ import argparse
 import random
 import string
 import sys
+import os
+import subprocess
 import time
 from getpass import getpass
 import digitalocean
@@ -150,8 +152,18 @@ class DigitalOceanSetup(object):
         print(final_domain)
         # Run ansible playbook
         if args.ansible:
-            eprint("Complete the setup by running the following:")
-            eprint("ansible-playbook -i {0}, setup-factorio.yml".format(final_domain))
+            seconds = 15
+            # Waiting is quite important here as the SSH agent needs time to start
+            eprint("Waiting {0} seconds for server to init...".format(seconds))
+            time.sleep(seconds)
+            eprint("Running Ansible...")
+            os.environ["ANSIBLE_HOST_KEY_CHECKING"] = "False"
+            process = subprocess.Popen(["ansible-playbook", "-i", final_domain + ",",
+                                        "--private-key", "~/.ssh/id_rsa",
+                                        "setup-factorio.yml"],
+                                       stdout=subprocess.PIPE)
+            out, _ = process.communicate()
+            eprint(out)
 
     @staticmethod
     def setup_args_delete(parser):
