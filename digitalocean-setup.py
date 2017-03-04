@@ -1,10 +1,11 @@
 from __future__ import print_function
-import digitalocean
-import time
+import argparse
 import random
 import string
 import sys
+import time
 from getpass import getpass
+import digitalocean
 
 
 def get_random_string(length=5):
@@ -106,19 +107,76 @@ class MachineSetup(object):
             eprint("Destroying %s" % droplet.name)
             droplet.destroy()
 
+
+class DigitalOceanSetup(object):
+
+    @staticmethod
+    def create_interface(domain=None):
+        """
+        Create the MachineSetup object after asking the user for the API token
+        """
+        secret_token = getpass(prompt="DigitalOcean API Token: ")
+        interface = MachineSetup(secret_token, domain)
+        return interface
+
+    @staticmethod
+    def setup_args_create(parser):
+        """
+        Register the CMD args for the create function
+        """
+        parser.add_argument("--domain", required=False)
+        return parser
+
+    @staticmethod
+    def create(args):
+        # Get the domain name
+        if args.domain:
+            domain = args.domain
+        else:
+            domain = str(raw_input("Enter domain name: "))
+
+        interface = DigitalOceanSetup.create_interface(domain)
+
+        machine_name = ("%s-%s" % ("factorio", get_random_string(5))).lower()
+
+        # Create a new droplet
+        droplet = interface.create_new_server(machine_name, "factorio")
+        interface.setup_domain_for_droplet(droplet, machine_name)
+        # Output the IP address and hostname for the new droplet
+        print(droplet.ip_address)
+        print(interface.create_domain_name(machine_name))
+
+    @staticmethod
+    def setup_args_delete(parser):
+        """
+        Register arguments for delete command
+        """
+        parser.add_argument("--tag", required=True)
+        return parser
+
+    @staticmethod
+    def delete(args):
+        """
+        Run the delete function
+        """
+        tag = str(args.tag)
+        interface = DigitalOceanSetup.create_interface()
+        # Delete everything matching the tag
+        interface.destroy_machines_by_tag(tag)
+
+
 if __name__ == "__main__":
-    secret_token = getpass(prompt="DigitalOcean API Token: ")
-    domain = "example.com"
-    interface = MachineSetup(secret_token, domain)
-
-    machine_name = ("%s-%s" % ("factorio", get_random_string(5))).lower()
-
-    # Create a new droplet
-    droplet = interface.create_new_server(machine_name, "testing")
-    interface.setup_domain_for_droplet(droplet, machine_name)
-    # Output the IP address and hostname for the new droplet
-    print(droplet.ip_address)
-    print(interface.create_domain_name(machine_name))
-
-    # Delete everything created after testing
-    # interface.destroy_machines_by_tag("testing")
+    parser = argparse.ArgumentParser(description="Setup a DigitalOcean server")
+    subparsers = parser.add_subparsers(dest="command")
+    # Setup sub commands arguments
+    parser_create = subparsers.add_parser(
+        'create', help="Create a new droplet")
+    DigitalOceanSetup.setup_args_create(parser_create)
+    parser_delete = subparsers.add_parser('delete', help="Delete a droplet")
+    DigitalOceanSetup.setup_args_delete(parser_delete)
+    # Parse the command line arguments
+    args = parser.parse_args()
+    if args.command == "create":
+        DigitalOceanSetup.create(args)
+    elif args.command == "delete":
+        DigitalOceanSetup.delete(args)
