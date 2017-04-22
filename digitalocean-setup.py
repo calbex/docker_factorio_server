@@ -42,19 +42,23 @@ def read_server_file():
         return []
 
 
+def save_dict_to_file(filename, dict_to_save):
+    # Write contents to file
+    with open(filename, "w+") as server_file:
+        server_file.seek(0)
+        json.dump(dict_to_save, server_file, sort_keys=True,
+                  indent=4, separators=(',', ': '))
+        server_file.truncate()
+
+
 def save_server_to_file(object_output):
     """ Saves the server object as JSON to the servers file
         object_output should be a function
     """
     # Get contents, update, and write to file
     data = read_server_file()
-    with open("servers.json", "w+") as server_file:
-        data.append(object_output())
-        # Write contents to file
-        server_file.seek(0)
-        json.dump(data, server_file, sort_keys=True,
-                  indent=4, separators=(',', ': '))
-        server_file.truncate()
+    data.append(object_output())
+    save_dict_to_file("servers.json", data)
 
 
 def droplet_details(droplet):
@@ -149,6 +153,11 @@ class MachineSetup(object):
             eprint("Destroying %s" % droplet.name)
             droplet.destroy()
 
+    def destroy_machine_by_id(self, droplet_id):
+        droplet = self.manager.get_droplet(droplet_id)
+        eprint("Destroying %s" % droplet.name)
+        droplet.destroy()
+
 
 class DigitalOceanSetup(object):
 
@@ -212,7 +221,11 @@ class DigitalOceanSetup(object):
         """
         Register arguments for delete command
         """
-        parser.add_argument("--tag", required=True)
+        parser.add_argument("--tag", required=False)
+        parser.add_argument("--save", required=False,
+                            dest="save", action="store_true")
+        parser.add_argument("--list", required=False,
+                            dest="delete_list", action="store_true")
         return parser
 
     @staticmethod
@@ -220,10 +233,35 @@ class DigitalOceanSetup(object):
         """
         Run the delete function
         """
-        tag = str(args.tag)
-        interface = DigitalOceanSetup.create_interface()
-        # Delete everything matching the tag
-        interface.destroy_machines_by_tag(tag)
+        if args.tag is not None:
+            tag = str(args.tag)
+            interface = DigitalOceanSetup.create_interface()
+            # Delete everything matching the tag
+            interface.destroy_machines_by_tag(tag)
+        elif args.delete_list:
+            server_list = read_server_file()
+            if len(server_list) == 1:
+                interface = DigitalOceanSetup.create_interface()
+                droplet_details = server_list[0]
+                # Download the save game from the server
+                if args.save:
+                    eprint("Running Ansible...")
+                    os.environ["ANSIBLE_HOST_KEY_CHECKING"] = "False"
+                    process = subprocess.Popen(["ansible-playbook", "-i",
+                                                droplet_details["name"] + ",",
+                                                "--private-key", "~/.ssh/id_rsa",
+                                                "save-factorio.yml"],
+                                               stdout=subprocess.PIPE)
+                    out, _ = process.communicate()
+                    eprint(out)
+                # Now destory the droplet
+                interface.destroy_machine_by_id(droplet_details["id"])
+                # Save empty list to file
+                save_dict_to_file("servers.json", [])
+            else:
+                eprint("Too many or no items in server list.")
+        else:
+            eprint("Missing arguments.")
 
 
 if __name__ == "__main__":
