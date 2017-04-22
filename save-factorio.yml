@@ -1,0 +1,19 @@
+---
+- hosts: all
+  remote_user: root
+  tasks:
+    - name: Stop Docker image
+      command: docker-compose stop
+      args:
+        chdir: /root/factorio/
+
+    - name: Package save files
+      command: tar -zcvf saves-shutdown.tar.gz saves
+      args:
+        chdir: /root/factorio/
+
+    - name: Download saves to local machine
+      fetch:
+          src: /root/factorio/saves-shutdown.tar.gz
+          dest: ./saves.tar.gz
+          flat: yes

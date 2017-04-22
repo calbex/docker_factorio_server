@@ -6,6 +6,7 @@ import sys
 import os
 import subprocess
 import time
+import json
 from getpass import getpass
 import digitalocean
 
@@ -23,6 +24,45 @@ def eprint(*args, **kwargs):
     Print to stderr
     """
     print(*args, file=sys.stderr, **kwargs)
+
+
+def read_server_file():
+    """
+    Reads the contents of the server file and converts
+    it to a dictionary.
+    """
+    try:
+        with open("servers.json", "r") as server_file:
+            try:
+                data = json.load(server_file)
+            except:
+                data = []
+            return data
+    except IOError:
+        return []
+
+
+def save_server_to_file(object_output):
+    """ Saves the server object as JSON to the servers file
+        object_output should be a function
+    """
+    # Get contents, update, and write to file
+    data = read_server_file()
+    with open("servers.json", "w+") as server_file:
+        data.append(object_output())
+        # Write contents to file
+        server_file.seek(0)
+        json.dump(data, server_file, sort_keys=True,
+                  indent=4, separators=(',', ': '))
+        server_file.truncate()
+
+
+def droplet_details(droplet):
+    def droplet_details_func():
+        items = ["id", "name", "memory", "vcpus",
+                 "disk", "ip_address"]
+        return dict((i, getattr(droplet, i)) for i in items)
+    return droplet_details_func
 
 
 class MachineSetup(object):
@@ -149,6 +189,8 @@ class DigitalOceanSetup(object):
         # Output the IP address and hostname for the new droplet
         eprint(droplet.ip_address)
         final_domain = interface.create_domain_name(machine_name)
+        # Save droplet details to file
+        save_server_to_file(droplet_details(droplet))
         print(final_domain)
         # Run ansible playbook
         if args.ansible:
@@ -185,6 +227,7 @@ class DigitalOceanSetup(object):
 
 
 if __name__ == "__main__":
+    # Create arg parsers
     parser = argparse.ArgumentParser(description="Setup a DigitalOcean server")
     subparsers = parser.add_subparsers(dest="command")
     # Setup sub commands arguments

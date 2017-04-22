@@ -1,3 +1,6 @@
+## Requirements
+- SSH key must be setup in DigitalOcean
+
 ## Install
 ### DigitalOcean setup scripts
 Requires python-digitalocean to be installed:
@@ -5,7 +8,7 @@ Requires python-digitalocean to be installed:
 pip install -U python-digitalocean
 ```
 
-### Run Docker Image 
+### Run Docker Image
 ```
 ./setup.sh
 docker-compose build

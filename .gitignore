@@ -4,3 +4,4 @@ saves/
 mods/
 *.tar.gz
 *.retry
+servers.json
