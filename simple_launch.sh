@@ -1,4 +1,4 @@
-#!/bin/bash
+gi#!/bin/bash
 
 # Setting initial command
 factorio_command="/opt/factorio/bin/x64/factorio"
@@ -20,7 +20,7 @@ then
     echo "###"
     /opt/factorio/bin/x64/factorio --create save.zip
   fi
-  factorio_command="$factorio_command --start-server-load-latest"
+  factorio_command="$factorio_command --start-server-load-latest --server-settings /opt/factorio/data/server-settings.json"
 else
   factorio_command="$factorio_command --start-server $FACTORIO_SAVE"
 fi
