@@ -1,4 +1,4 @@
-gi#!/bin/bash
+#!/bin/bash
 
 # Setting initial command
 factorio_command="/opt/factorio/bin/x64/factorio"

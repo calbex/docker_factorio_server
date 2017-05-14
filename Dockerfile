@@ -12,14 +12,14 @@ VOLUME /opt/factorio/saves /opt/factorio/mods
 EXPOSE 34197/udp
 EXPOSE 27015/tcp
 
-CMD ["./simple_launch.sh"]
+ENTRYPOINT ["/bin/sh", "./simple_launch.sh"]
 
 ENV FACTORIO_AUTOSAVE_INTERVAL=2 \
     FACTORIO_AUTOSAVE_SLOTS=3 \
     FACTORIO_ALLOW_COMMANDS=false \
     FACTORIO_NO_AUTO_PAUSE=false \
-    VERSION=0.15.9 \
-    FACTORIO_SHA1=37c6623bad01b467bb000c17873d738e09197403 \
+    VERSION=0.15.10 \
+    FACTORIO_SHA1=2e11b3a9dd2e2a0a5831032325615c37a65ed414 \
     FACTORIO_WAITING=false \
     FACTORIO_MODE=normal \
     FACTORIO_SERVER_NAME= \
