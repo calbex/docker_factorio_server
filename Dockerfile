@@ -33,7 +33,7 @@ ENV FACTORIO_AUTOSAVE_INTERVAL=2 \
     FACTORIO_SERVER_VERIFY_IDENTITY=
 
 RUN apk --update add bash curl && \
-    curl -sSL /opt/factorio.crt https://www.factorio.com/get-download/$VERSION/headless/linux64 -o /tmp/factorio_headless_x64_$VERSION.tar.xz && \
+    curl -sSL https://www.factorio.com/get-download/$VERSION/headless/linux64 -o /tmp/factorio_headless_x64_$VERSION.tar.xz && \
     echo "$FACTORIO_SHA1  /tmp/factorio_headless_x64_$VERSION.tar.xz" | sha1sum -c && \
     tar xJf /tmp/factorio_headless_x64_$VERSION.tar.xz && \
     rm /tmp/factorio_headless_x64_$VERSION.tar.xz
