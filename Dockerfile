@@ -18,8 +18,8 @@ ENV FACTORIO_AUTOSAVE_INTERVAL=2 \
     FACTORIO_AUTOSAVE_SLOTS=3 \
     FACTORIO_ALLOW_COMMANDS=false \
     FACTORIO_NO_AUTO_PAUSE=false \
-    VERSION=0.16.51 \
-    FACTORIO_SHA1=127e7ff484ab263b13615d6114013ce0a66ac929 \
+    VERSION=0.17.17 \
+    FACTORIO_SHA1=573a023916d0653bf7c66598c3a2dd63b12a1421 \
     FACTORIO_WAITING=false \
     FACTORIO_MODE=normal \
     FACTORIO_SERVER_NAME= \
@@ -33,7 +33,7 @@ ENV FACTORIO_AUTOSAVE_INTERVAL=2 \
     FACTORIO_SERVER_VERIFY_IDENTITY=
 
 RUN apk --update add bash curl && \
-    curl -sSL --cacert /opt/factorio.crt https://www.factorio.com/get-download/$VERSION/headless/linux64 -o /tmp/factorio_headless_x64_$VERSION.tar.xz && \
+    curl -sSL /opt/factorio.crt https://www.factorio.com/get-download/$VERSION/headless/linux64 -o /tmp/factorio_headless_x64_$VERSION.tar.xz && \
     echo "$FACTORIO_SHA1  /tmp/factorio_headless_x64_$VERSION.tar.xz" | sha1sum -c && \
     tar xJf /tmp/factorio_headless_x64_$VERSION.tar.xz && \
     rm /tmp/factorio_headless_x64_$VERSION.tar.xz
